@@ -74,6 +74,10 @@ header .sub{font-size:.85rem;opacity:.85}
 .okb{background:#d9f7ea;color:#0a6b43;border:2px solid var(--green);border-radius:20px;padding:14px 18px;margin-bottom:12px;font-weight:700;font-size:1.1rem}
 .okb small{display:block;font-weight:400;font-size:.9rem;margin-top:2px}
 .empty{text-align:center;color:var(--mute);padding:36px 12px;background:var(--card);border-radius:20px;border:2px dashed var(--line)}
+.search{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.search[hidden]{display:none}
+.search input{flex:1;min-width:0;font-size:1rem;padding:12px 18px;border-radius:999px;border:2px solid var(--line);background:#fff;color:#2b2350}
+.search .meta{white-space:nowrap}
 dialog{border:0;border-radius:24px;padding:0;width:min(440px,92vw);background:var(--card);color:var(--ink)}
 dialog::backdrop{background:rgba(43,35,80,.55)}
 dialog form{padding:22px;display:grid;gap:12px}
@@ -101,6 +105,7 @@ input,select{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid 
   <button class="tab" role="tab" data-t="history" id="tabHist" hidden>✅ ประวัติการคืน</button>
   <button class="tab" role="tab" data-t="add" id="tabAdd" hidden>➕ ลงทะเบียนรับพัสดุ</button>
 </div>
+<div class="search" id="searchBar"><input id="q" type="search" placeholder="🔍 ค้นหาพัสดุ เช่น ชื่อ ยี่ห้อ ประเภท หรือสถานที่เก็บ" aria-label="ค้นหาพัสดุ" autocomplete="off"><span class="meta" id="qCount"></span></div>
 <div id="view"></div>
 </div>
 
@@ -191,13 +196,15 @@ function render(){
   $('#tabAdd').hidden=!me;$('#tabHist').hidden=!me;
   $('#who').hidden=!me;if(me)$('#who').textContent='👤 '+me.name+' ('+me.dept+')';
   $('#loginBtn').textContent=me?'ออกจากระบบ':'🔐 เข้าสู่ระบบเจ้าหน้าที่';
-  const v=$('#view');
+  const v=$('#view'),qq=($('#q').value||'').trim().toLowerCase();
+  const list=items.filter(i=>!qq||[i.name,i.code,i.type,i.spec,i.serial,i.place].some(s=>String(s||'').toLowerCase().includes(qq)));
+  $('#searchBar').hidden=tab!=='items';$('#qCount').textContent=qq?'พบ '+list.length+' จาก '+items.length+' รายการ':'';
   if(tab==='items'){
-    v.innerHTML=items.length?`<div class="grid">${items.map((i,k)=>{const u=out(i.id),a=i.total-u;
+    v.innerHTML=list.length?`<div class="grid">${list.map(i=>{const k=items.indexOf(i),u=out(i.id),a=i.total-u;
       return `<div class="card" style="--c:${colors[k%6]}"><h3>${esc(i.name)}</h3><div class="meta">${esc(i.type)}${i.spec?' · '+esc(i.spec):''}${i.place?' · 📍'+esc(i.place):''}</div>
       <div class="qty"><div>ทั้งหมด<b>${i.total}</b></div><div class="av">ว่าง<b>${a}</b></div><div class="out">ถูกยืม<b>${u}</b></div></div>
       <div class="row"><button class="b-borrow" data-borrow="${i.id}" ${a<1?'disabled':''}>${a<1?'ถูกยืมหมดแล้ว':'ยืมพัสดุ'}</button>${me?`<button class="b-edit" data-edit="${i.id}" aria-label="แก้ไข ${esc(i.name)}">แก้ไข</button><button class="b-del" data-del="${i.id}" aria-label="ลบ ${esc(i.name)}">ลบ</button>`:''}</div></div>`}).join('')}</div>`
-      :'<div class="empty">ยังไม่มีพัสดุในระบบ</div>';
+      :qq?'<div class="empty">ไม่พบพัสดุที่ตรงกับ “'+esc(qq)+'”</div>':'<div class="empty">ยังไม่มีพัสดุในระบบ</div>';
   }else if(tab==='add'){v.innerHTML=addView();
   }else if(tab==='active'){
     v.innerHTML=act.length?act.map(l=>{
@@ -313,6 +320,7 @@ document.addEventListener('submit',async e=>{
   await load();
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
 })();
+$('#q').addEventListener('input',()=>render());
 </script>
 </body>
 </html>
