@@ -33,6 +33,8 @@ header .sub{font-size:.85rem;opacity:.85}
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .fg .w{grid-column:1/-1}
 .sc{overflow-x:auto}
+.sc.tall{max-height:460px;overflow:auto}
+.tbl th{position:sticky;top:0;background:var(--card)}
 .tbl{width:100%;border-collapse:collapse;font-size:.85rem}
 .tbl th,.tbl td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
@@ -177,7 +179,7 @@ async function load(){
   const [a,b]=await Promise.all([sb.from('items').select('*').order('name'),sb.from('loans').select('*').order('due_date')]);
   if(a.error||b.error){toast('โหลดข้อมูลไม่สำเร็จ: '+errMsg(a.error||b.error));return}
   items=a.data;loans=b.data;receipts=[];
-  if(me){const r=await sb.from('receipts').select('*').order('created_at',{ascending:false}).limit(8);receipts=r.data||[]}
+  if(me){const r=await sb.from('receipts').select('*').order('created_at',{ascending:false}).limit(200);receipts=r.data||[]}
   render();
 }
 async function setUser(u){
@@ -243,7 +245,7 @@ function addView(){
   <label>สภาพพัสดุ<select name="cond">${OPT(CONDS)}</select></label>
   <label class="w">หมายเหตุ<input name="note"></label>
   </div><div class="row" style="margin-top:14px"><button class="b-ok">บันทึกการรับพัสดุ</button></div></form>
-  <div class="panel" style="border-top-color:var(--green)"><h3 style="margin:0 0 8px">รายการรับล่าสุด</h3>${receipts.length?`<div class="sc"><table class="tbl"><tr><th>วันที่รับ</th><th>เลขที่พัสดุ</th><th>รายการ</th><th>จำนวน</th><th>วิธีได้มา</th><th>แหล่งเงิน</th><th>เลขที่เอกสาร</th><th>ผู้บันทึก</th></tr>${receipts.map(r=>`<tr><td>${fmt(r.receive_date)}</td><td>${esc(r.item_code)}</td><td>${esc(r.item_name)}</td><td>${r.qty}</td><td>${esc(r.method)}</td><td>${esc(r.fund)}</td><td>${esc(r.doc_no||'-')}</td><td>${esc(r.created_by_name)}</td></tr>`).join('')}</table></div>`:'<p class="hint">ยังไม่มีรายการรับ</p>'}</div>`;
+  <div class="panel" style="border-top-color:var(--green)"><h3 style="margin:0 0 8px">รายการรับล่าสุด <span class="meta">(${receipts.length} รายการ)</span></h3>${receipts.length?`<div class="sc tall"><table class="tbl"><tr><th>วันที่รับ</th><th>เลขที่พัสดุ</th><th>รายการ</th><th>จำนวน</th><th>วิธีได้มา</th><th>แหล่งเงิน</th><th>เลขที่เอกสาร</th><th>ผู้บันทึก</th></tr>${receipts.map(r=>`<tr><td>${fmt(r.receive_date)}</td><td>${esc(r.item_code)}</td><td>${esc(r.item_name)}</td><td>${r.qty}</td><td>${esc(r.method)}</td><td>${esc(r.fund)}</td><td>${esc(r.doc_no||'-')}</td><td>${esc(r.created_by_name)}</td></tr>`).join('')}</table></div>`:'<p class="hint">ยังไม่มีรายการรับ</p>'}</div>`;
 }
 
 document.addEventListener('click',async e=>{
