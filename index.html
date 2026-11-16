@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="logo.jpg">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ระบบยืม-คืนพัสดุสำนักงาน</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff8e1;color-scheme:light;--card:#fff;--ink:#2b2350;--mute:#6f6a8f;--line:#f0e6d2;--pink:#ff5c8a;--blue:#3d8bff;--green:#1fc27d;--yellow:#ffc233;--purple:#8b5cf6;--red:#ff4d4d;--orange:#ff8a3d;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#fff1b8 0%,#ffd9ec 38%,#cfe6ff 72%,#d4fbe6 100%) fixed;color:var(--ink);font-family:'Prompt','Noto Sans Thai',Tahoma,sans-serif;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+header{background:linear-gradient(120deg,var(--purple),var(--pink) 55%,var(--orange));color:#fff;border-radius:24px;padding:22px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:1.6rem;font-weight:700}
+header p{margin:2px 0 0;opacity:.92}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:9px 16px;font-weight:600;transition:transform .1s}
+button:active{transform:scale(.96)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.b-add{background:#fff;color:var(--purple)}
+.b-add[disabled]{opacity:.6}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.logo{width:84px;height:84px;flex:none;border-radius:50%;background:#fff;padding:3px;object-fit:contain;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+header .sub{font-size:.85rem;opacity:.85}
+.hd-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.who{background:rgba(255,255,255,.25);border-radius:999px;padding:4px 14px;font-weight:500;font-size:.9rem}
+.b-lg{background:rgba(255,255,255,.25);color:#fff}
+.err{color:var(--red);font-size:.85rem;margin:0;min-height:1.2em}
+.tab[hidden]{display:none}
+.panel{background:var(--card);border-radius:20px;border:2px solid var(--line);border-top:8px solid var(--purple);padding:18px;margin-bottom:16px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.fg .w{grid-column:1/-1}
+.sc{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th,.tbl td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.stat{border-radius:20px;padding:14px 16px;color:#fff}
+.stat b{display:block;font-size:1.9rem;line-height:1.1}
+.s1{background:var(--blue)}.s2{background:var(--purple)}.s3{background:var(--green)}.s4{background:var(--orange)}.s5{background:var(--red)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.tab[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{background:var(--card);border-radius:20px;padding:16px;border:2px solid var(--line);border-top:8px solid var(--c,var(--blue))}
+.card h3{margin:0 0 2px;font-size:1.1rem}
+.code{display:inline-block;background:var(--line);border-radius:8px;padding:0 8px;font-size:.8rem;color:var(--mute)}
+.qty{display:flex;gap:8px;margin:12px 0}
+.qty div{flex:1;border-radius:12px;padding:6px;text-align:center;font-size:.8rem;background:var(--line)}
+.qty b{display:block;font-size:1.3rem}
+.qty .av{background:#d9f7ea;color:#0a7a4c}
+.qty .out{background:#ffe9d6;color:#a8470c}
+.row{display:flex;gap:8px}
+.b-borrow{flex:1;background:var(--pink);color:#fff}
+.b-borrow:disabled{background:var(--line);color:var(--mute);cursor:not-allowed}
+.b-del{background:transparent;color:var(--red);border:2px solid var(--red)}
+.b-edit{background:var(--blue);color:#fff}
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{display:grid;grid-template-columns:minmax(0,1fr) 250px 250px;grid-template-areas:"name qty act" "meta qty act";align-items:center;column-gap:16px;row-gap:0;padding:12px 16px;border-top:2px solid var(--line);border-left:10px solid var(--c,var(--blue))}
+.card h3{grid-area:name;align-self:end}
+.card .meta{grid-area:meta;align-self:start}
+.card .qty{grid-area:qty;margin:0}
+.card .row{grid-area:act}
+@media (max-width:760px){.card{grid-template-columns:1fr;grid-template-areas:"name" "meta" "qty" "act"}.card .qty{margin:10px 0}}
+#dEdit{width:min(580px,94vw);max-height:92vh;overflow:auto}
+.loan{background:var(--card);border-radius:20px;border:2px solid var(--line);border-left:10px solid var(--blue);padding:14px 16px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.loan.late{border-left-color:var(--red)}.loan.done{border-left-color:var(--green)}
+.loan h4{margin:0;font-size:1.05rem}
+.meta{color:var(--mute);font-size:.9rem}
+.tag{display:inline-block;border-radius:999px;padding:2px 12px;font-size:.8rem;font-weight:600;color:#fff;background:var(--blue)}
+.tag.late{background:var(--red)}.tag.done{background:var(--green)}.tag.soon{background:var(--yellow);color:#4a3600}
+.b-ret{background:var(--green);color:#fff}
+.okb{background:#d9f7ea;color:#0a6b43;border:2px solid var(--green);border-radius:20px;padding:14px 18px;margin-bottom:12px;font-weight:700;font-size:1.1rem}
+.okb small{display:block;font-weight:400;font-size:.9rem;margin-top:2px}
+.empty{text-align:center;color:var(--mute);padding:36px 12px;background:var(--card);border-radius:20px;border:2px dashed var(--line)}
+dialog{border:0;border-radius:24px;padding:0;width:min(440px,92vw);background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(43,35,80,.55)}
+dialog form{padding:22px;display:grid;gap:12px}
+dialog h2{margin:0}
+label{display:grid;gap:4px;font-weight:500;font-size:.92rem}
+input,select{font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.hint{font-size:.82rem;color:var(--mute);margin:0}
+.b-ok{background:var(--purple);color:#fff;flex:1}
+.b-no{background:var(--line);color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><img class="logo" src="logo.jpg" alt="ตราองค์การบริหารส่วนตำบลตาคลี"><div><h1>📦 ระบบยืม-คืนพัสดุสำนักงาน</h1><p>องค์การบริหารส่วนตำบลตาคลี อ.ตาคลี จ.นครสวรรค์</p><p class="sub">ดูของที่ว่าง ยืม และรับคืนได้ในที่เดียว</p></div></div>
+  <div class="hd-r"><span class="who" id="who" hidden></span><button class="b-lg" id="loginBtn">🔐 เข้าสู่ระบบเจ้าหน้าที่</button></div>
+</header>
+<div class="stats" id="stats"></div>
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-t="items">🗂 พัสดุทั้งหมด</button>
+  <button class="tab" role="tab" data-t="active">🤝 กำลังยืม</button>
+  <button class="tab" role="tab" data-t="history" id="tabHist" hidden>✅ ประวัติการคืน</button>
+  <button class="tab" role="tab" data-t="add" id="tabAdd" hidden>➕ ลงทะเบียนรับพัสดุ</button>
+</div>
+<div id="view"></div>
+</div>
+
+<dialog id="dLogin"><form id="fLogin">
+  <h2>เข้าสู่ระบบเจ้าหน้าที่</h2>
+  <p class="hint">เฉพาะเจ้าหน้าที่ที่ได้รับสิทธิ์เท่านั้นที่เพิ่ม/แก้ไข/ลบพัสดุ ดูประวัติ และรับคืนพัสดุได้ ส่วนการยืมทุกคนใช้ได้</p>
+  <label>อีเมล<input name="u" type="email" required autocomplete="username"></label>
+  <label>รหัสผ่าน<input name="p" type="password" required autocomplete="current-password"></label>
+  <p class="err" id="lgErr" role="alert"></p>
+  <div class="row"><button type="button" class="b-no" data-close>ยกเลิก</button><button class="b-ok">เข้าสู่ระบบ</button></div>
+</form></dialog>
+
+<dialog id="dEdit"><form id="fEdit">
+  <h2>แก้ไขข้อมูลพัสดุ</h2>
+  <p class="hint" id="eInfo"></p>
+  <input type="hidden" name="iid">
+  <div class="fg">
+  <label>เลขที่พัสดุ / รหัสครุภัณฑ์ *<input name="code" required></label>
+  <label>ชื่อรายการ *<input name="name" required></label>
+  <label>ประเภทพัสดุ<select name="type"></select></label>
+  <label>ยี่ห้อ / รุ่น / ขนาด<input name="spec"></label>
+  <label>หมายเลขเครื่อง (Serial No.)<input name="serial"></label>
+  <label>จำนวนทั้งหมด *<input name="total" type="number" min="1" required></label>
+  <label>หน่วยนับ<input name="unit"></label>
+  <label>สถานที่เก็บ / หน่วยงานรับผิดชอบ<input name="place"></label>
+  <label>สภาพพัสดุ<select name="cond"></select></label>
+  </div>
+  <p class="hint">การรับพัสดุใหม่ที่ต้องมีเอกสารอ้างอิง ควรบันทึกที่แท็บ “ลงทะเบียนรับพัสดุ”</p>
+  <div class="row"><button type="button" class="b-no" data-close>ยกเลิก</button><button class="b-ok">บันทึกการแก้ไข</button></div>
+</form></dialog>
+
+<dialog id="dBorrow"><form id="fBorrow">
+  <h2 id="bTitle">ยืมพัสดุ</h2>
+  <p class="hint" id="bInfo"></p>
+  <label>ชื่อผู้ยืม<input name="person" required placeholder="ชื่อ-นามสกุล"></label>
+  <label>จำนวนที่ยืม<input name="qty" type="number" min="1" value="1" required></label>
+  <label>วันที่ยืม<input name="bd" type="date" required></label>
+  <label>วันที่จะส่งคืน<input name="dd" type="date" required></label>
+  <div class="row"><button type="button" class="b-no" data-close>ยกเลิก</button><button class="b-ok">ยืนยันการยืม</button></div>
+</form></dialog>
+
+<dialog id="dAsk"><form method="dialog" id="fAsk"><h2 id="aTitle"></h2><p id="aMsg" style="margin:0"></p>
+  <div class="row"><button type="button" class="b-no" data-close>ยกเลิก</button><button type="button" class="b-ok" id="aOk">ยืนยัน</button></div></form></dialog>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}):'-';
+const colors=['var(--blue)','var(--pink)','var(--green)','var(--orange)','var(--purple)','var(--yellow)'];
+const TYPES=['วัสดุสำนักงาน','วัสดุคอมพิวเตอร์','ครุภัณฑ์สำนักงาน','ครุภัณฑ์คอมพิวเตอร์','ครุภัณฑ์อื่น ๆ'];
+const METHODS=['จัดซื้อ','จัดจ้าง','ได้รับบริจาค','โอนจากหน่วยงานอื่น'];
+const FUNDS=['เงินงบประมาณ','เงินนอกงบประมาณ','เงินรายได้','เงินบริจาค'];
+const CONDS=['ใหม่','ใช้งานได้ดี','ชำรุด'];
+const OPT=a=>a.map(x=>`<option>${x}</option>`).join('');
+let sb,items=[],loans=[],receipts=[],me=null,tab='items';
+const out=id=>loans.filter(l=>l.item_id===id&&!l.return_date).reduce((a,l)=>a+l.qty,0);
+const item=id=>items.find(i=>i.id===id);
+const errMsg=e=>e&&e.code==='23505'?'เลขที่พัสดุนี้มีอยู่แล้ว':(e&&e.message)||'เกิดข้อผิดพลาด';
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2600)}
+function ask(msg,title,cb){$('#aTitle').textContent=title;$('#aMsg').textContent=msg;$('#aOk').onclick=()=>{$('#dAsk').close();cb()};$('#dAsk').showModal()}
+$('#fEdit').elements.type.innerHTML=OPT(TYPES);$('#fEdit').elements.cond.innerHTML=OPT(CONDS);
+
+async function load(){
+  if(!sb)return;
+  const [a,b]=await Promise.all([sb.from('items').select('*').order('name'),sb.from('loans').select('*').order('due_date')]);
+  if(a.error||b.error){toast('โหลดข้อมูลไม่สำเร็จ: '+errMsg(a.error||b.error));return}
+  items=a.data;loans=b.data;receipts=[];
+  if(me){const r=await sb.from('receipts').select('*').order('created_at',{ascending:false}).limit(8);receipts=r.data||[]}
+  render();
+}
+async function setUser(u){
+  me=null;
+  if(!u)return;
+  const {data}=await sb.from('staff').select('full_name,dept').eq('user_id',u.id).maybeSingle();
+  if(data)me={id:u.id,name:data.full_name,dept:data.dept};
+}
+
+function render(){
+  const act=loans.filter(l=>!l.return_date),late=act.filter(l=>l.due_date<today());
+  const total=items.reduce((a,i)=>a+i.total,0),o=act.reduce((a,l)=>a+l.qty,0);
+  $('#stats').innerHTML=[['s2',total,'ชิ้นทั้งหมด'],['s3',total-o,'ชิ้นว่างให้ยืม'],['s4',o,'ชิ้นถูกยืมอยู่'],['s5',late.length,'รายการเกินกำหนด']].map(s=>`<div class="stat ${s[0]}"><b>${s[1]}</b>${s[2]}</div>`).join('');
+  if((tab==='add'||tab==='history')&&!me)tab='items';
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));
+  $('#tabAdd').hidden=!me;$('#tabHist').hidden=!me;
+  $('#who').hidden=!me;if(me)$('#who').textContent='👤 '+me.name+' ('+me.dept+')';
+  $('#loginBtn').textContent=me?'ออกจากระบบ':'🔐 เข้าสู่ระบบเจ้าหน้าที่';
+  const v=$('#view');
+  if(tab==='items'){
+    v.innerHTML=items.length?`<div class="grid">${items.map((i,k)=>{const u=out(i.id),a=i.total-u;
+      return `<div class="card" style="--c:${colors[k%6]}"><h3>${esc(i.name)}</h3><div class="meta">${esc(i.type)}${i.spec?' · '+esc(i.spec):''}${i.place?' · 📍'+esc(i.place):''}</div>
+      <div class="qty"><div>ทั้งหมด<b>${i.total}</b></div><div class="av">ว่าง<b>${a}</b></div><div class="out">ถูกยืม<b>${u}</b></div></div>
+      <div class="row"><button class="b-borrow" data-borrow="${i.id}" ${a<1?'disabled':''}>${a<1?'ถูกยืมหมดแล้ว':'ยืมพัสดุ'}</button>${me?`<button class="b-edit" data-edit="${i.id}" aria-label="แก้ไข ${esc(i.name)}">แก้ไข</button><button class="b-del" data-del="${i.id}" aria-label="ลบ ${esc(i.name)}">ลบ</button>`:''}</div></div>`}).join('')}</div>`
+      :'<div class="empty">ยังไม่มีพัสดุในระบบ</div>';
+  }else if(tab==='add'){v.innerHTML=addView();
+  }else if(tab==='active'){
+    v.innerHTML=act.length?act.map(l=>{
+      const days=Math.round((new Date(l.due_date)-new Date(today()))/864e5);
+      const cls=days<0?'late':'',tag=days<0?`<span class="tag late">เกินกำหนด ${-days} วัน</span>`:days<=2?`<span class="tag soon">ครบกำหนดใน ${days} วัน</span>`:'<span class="tag">กำลังยืม</span>';
+      return `<div class="loan ${cls}"><div><h4>${esc(l.item_name)} × ${l.qty} ${tag}</h4>
+      <div class="meta">👤 ${esc(l.person)} · ยืมเมื่อ ${fmt(l.borrow_date)} · กำหนดคืน ${fmt(l.due_date)}</div></div>
+      ${me?`<button class="b-ret" data-ret="${l.id}">รับคืนพัสดุ</button>`:'<span class="meta">ยืมแล้วเรียบร้อย</span>'}</div>`}).join('')
+      :'<div class="empty">ตอนนี้ไม่มีใครยืมพัสดุอยู่ 🎉</div>';
+  }else{
+    const h=loans.filter(l=>l.return_date).sort((a,b)=>b.return_date.localeCompare(a.return_date));
+    v.innerHTML=h.length?h.map(l=>`<div class="loan done"><div><h4>${esc(l.item_name||'(พัสดุถูกลบ)')} × ${l.qty} <span class="tag done">✓ คืนเรียบร้อยแล้ว</span></h4>
+      <div class="meta">👤 ${esc(l.person)} · ยืม ${fmt(l.borrow_date)} · กำหนดคืน ${fmt(l.due_date)} · คืนจริง ${fmt(l.return_date)}${l.received_by?' · รับคืนโดย '+esc(l.received_by):''}</div></div></div>`).join('')
+      :'<div class="empty">ยังไม่มีประวัติการคืน</div>';
+  }
+}
+
+function addView(){
+  return `<form class="panel" id="fAdd"><h2 style="margin:0 0 4px">ทะเบียนรับพัสดุ</h2>
+  <p class="hint" style="margin-bottom:12px">ผู้บันทึก: ${esc(me.name)} · หากใช้เลขที่พัสดุเดิม ระบบจะเพิ่มจำนวนให้รายการนั้นและบันทึกการรับไว้ในทะเบียน</p>
+  <div class="fg">
+  <label>เลขที่พัสดุ / รหัสครุภัณฑ์ *<input name="code" required placeholder="เช่น OFF-005"></label>
+  <label>ชื่อรายการ *<input name="name" required></label>
+  <label>ประเภทพัสดุ *<select name="type">${OPT(TYPES)}</select></label>
+  <label>ยี่ห้อ / รุ่น / ขนาด<input name="spec"></label>
+  <label>หมายเลขเครื่อง (Serial No.)<input name="serial"></label>
+  <label>จำนวนที่รับ *<input name="qty" type="number" min="1" value="1" required></label>
+  <label>หน่วยนับ *<input name="unit" value="ชิ้น" required></label>
+  <label>ราคาต่อหน่วย (บาท)<input name="price" type="number" min="0" step="0.01"></label>
+  <label>วิธีได้มา *<select name="method">${OPT(METHODS)}</select></label>
+  <label>แหล่งเงิน *<select name="fund">${OPT(FUNDS)}</select></label>
+  <label>เลขที่เอกสาร (ใบสั่งซื้อ/ใบตรวจรับ)<input name="doc"></label>
+  <label>วันที่ได้รับ *<input name="date" type="date" value="${today()}" required></label>
+  <label>ผู้ขาย / ผู้บริจาค / หน่วยงานที่โอน<input name="vendor"></label>
+  <label>สถานที่เก็บ / หน่วยงานรับผิดชอบ<input name="place"></label>
+  <label>สภาพพัสดุ<select name="cond">${OPT(CONDS)}</select></label>
+  <label class="w">หมายเหตุ<input name="note"></label>
+  </div><div class="row" style="margin-top:14px"><button class="b-ok">บันทึกการรับพัสดุ</button></div></form>
+  <div class="panel" style="border-top-color:var(--green)"><h3 style="margin:0 0 8px">รายการรับล่าสุด</h3>${receipts.length?`<div class="sc"><table class="tbl"><tr><th>วันที่รับ</th><th>เลขที่พัสดุ</th><th>รายการ</th><th>จำนวน</th><th>วิธีได้มา</th><th>แหล่งเงิน</th><th>เลขที่เอกสาร</th><th>ผู้บันทึก</th></tr>${receipts.map(r=>`<tr><td>${fmt(r.receive_date)}</td><td>${esc(r.item_code)}</td><td>${esc(r.item_name)}</td><td>${r.qty}</td><td>${esc(r.method)}</td><td>${esc(r.fund)}</td><td>${esc(r.doc_no||'-')}</td><td>${esc(r.created_by_name)}</td></tr>`).join('')}</table></div>`:'<p class="hint">ยังไม่มีรายการรับ</p>'}</div>`;
+}
+
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(t.id==='loginBtn'){
+    if(me){await sb.auth.signOut();me=null;tab='items';await load();toast('ออกจากระบบแล้ว')}
+    else{$('#fLogin').reset();$('#lgErr').textContent='';$('#dLogin').showModal()}
+    return}
+  if(t.dataset.t){tab=t.dataset.t;render()}
+  if(t.dataset.close!==undefined)t.closest('dialog').close();
+  if(t.dataset.borrow){
+    const i=item(+t.dataset.borrow),a=i.total-out(i.id),f=$('#fBorrow');
+    f.reset();f.dataset.id=i.id;$('#bTitle').textContent='ยืม '+i.name;$('#bInfo').textContent='ว่าง '+a+' '+i.unit;
+    f.qty.max=a;f.bd.value=today();const d=new Date();d.setDate(d.getDate()+7);f.dd.value=d.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});$('#dBorrow').showModal();
+  }
+  if(t.dataset.edit&&me){
+    const i=item(+t.dataset.edit),E=$('#fEdit').elements,u=out(i.id);
+    E.iid.value=i.id;E.code.value=i.code;E.name.value=i.name;E.type.value=i.type;E.spec.value=i.spec||'';E.serial.value=i.serial||'';
+    E.total.value=i.total;E.total.min=Math.max(1,u);E.unit.value=i.unit;E.place.value=i.place||'';E.cond.value=i.cond||'ใช้งานได้ดี';
+    $('#eInfo').textContent=i.name+' · ถูกยืมอยู่ '+u+' ชิ้น (จำนวนทั้งหมดต้องไม่น้อยกว่านี้)';$('#dEdit').showModal();
+  }
+  if(t.dataset.del&&me){
+    const i=item(+t.dataset.del);
+    ask('ลบ “'+i.name+'” ออกจากระบบ?','ลบพัสดุ',async()=>{
+      const {error}=await sb.from('items').delete().eq('id',i.id);
+      if(error){toast(errMsg(error));return}
+      await load();toast('ลบพัสดุแล้ว')});
+  }
+  if(t.dataset.ret&&me){
+    const l=loans.find(x=>x.id===+t.dataset.ret);if(!l||l.return_date)return;const it=item(l.item_id);
+    ask('ยืนยันว่า '+l.person+' คืน '+l.item_name+' ครบ '+l.qty+' '+(it?.unit||'ชิ้น')+' แล้ว?','ยืนยันการรับคืน',async()=>{
+      const {error}=await sb.rpc('return_loan',{p_loan_id:l.id});
+      if(error){toast(errMsg(error));return}
+      await load();
+      const av=it?it.total-out(it.id):0;
+      $('#view').insertAdjacentHTML('afterbegin','<div class="okb" role="status">✓ คืนเรียบร้อยแล้ว<small>'+esc(l.person)+' คืน '+esc(l.item_name)+' × '+l.qty+' · พัสดุกลับเข้าระบบแล้ว ว่างให้ยืม '+av+' '+esc(it?.unit||'ชิ้น')+'</small></div>');
+      toast('✓ คืนเรียบร้อยแล้ว')});
+  }
+});
+
+document.addEventListener('submit',async e=>{
+  e.preventDefault();const f=e.target,id=f.id;
+  if(id==='fLogin'){
+    const {data,error}=await sb.auth.signInWithPassword({email:f.u.value.trim(),password:f.p.value});
+    if(error){$('#lgErr').textContent='อีเมลหรือรหัสผ่านไม่ถูกต้อง';return}
+    await setUser(data.user);
+    if(!me){await sb.auth.signOut();$('#lgErr').textContent='บัญชีนี้ยังไม่ได้รับสิทธิ์เจ้าหน้าที่';return}
+    $('#dLogin').close();tab='add';await load();toast('ยินดีต้อนรับ '+me.name);
+  }else if(id==='fBorrow'){
+    const i=item(+f.dataset.id);
+    if(f.dd.value<f.bd.value){toast('วันที่คืนต้องไม่ก่อนวันที่ยืม');return}
+    const {error}=await sb.from('loans').insert({item_id:i.id,person:f.person.value.trim(),qty:+f.qty.value,borrow_date:f.bd.value,due_date:f.dd.value});
+    if(error){toast(errMsg(error));await load();return}
+    $('#dBorrow').close();tab='active';await load();toast('บันทึกการยืมแล้ว');
+  }else if(id==='fEdit'){
+    if(!me)return;const d=Object.fromEntries(new FormData(f));
+    const {error}=await sb.from('items').update({code:d.code.trim(),name:d.name.trim(),type:d.type,spec:d.spec.trim()||null,serial:d.serial.trim()||null,total:+d.total,unit:d.unit.trim()||'ชิ้น',place:d.place.trim()||null,cond:d.cond}).eq('id',+d.iid);
+    if(error){toast(errMsg(error));return}
+    $('#dEdit').close();await load();toast('บันทึกการแก้ไขแล้ว');
+  }else if(id==='fAdd'){
+    if(!me)return;const d=Object.fromEntries(new FormData(f));
+    const {error}=await sb.rpc('register_receipt',{p_code:d.code,p_name:d.name,p_type:d.type,p_spec:d.spec,p_serial:d.serial,p_unit:d.unit,p_place:d.place,p_cond:d.cond,p_qty:+d.qty,p_date:d.date,p_method:d.method,p_fund:d.fund,p_doc:d.doc,p_vendor:d.vendor,p_price:+d.price||0,p_note:d.note});
+    if(error){toast(errMsg(error));return}
+    await load();toast('บันทึกการรับ '+d.name+' '+d.qty+' '+d.unit+' แล้ว');
+  }
+});
+
+(async()=>{
+  const c=window.APP_CONFIG||{};
+  if(!c.SUPABASE_URL||!c.SUPABASE_ANON_KEY||/YOUR-/.test(c.SUPABASE_URL+c.SUPABASE_ANON_KEY)){
+    $('#view').innerHTML='<div class="empty">⚙️ ยังไม่ได้ตั้งค่า Supabase<br>เปิดไฟล์ <b>config.js</b> แล้วใส่ Project URL และ anon key (ดูขั้นตอนใน README.md)</div>';return}
+  sb=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY);
+  try{const {data}=await sb.auth.getSession();await setUser(data.session&&data.session.user)}catch(x){}
+  await load();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+})();
+</script>
+</body>
+</html>
